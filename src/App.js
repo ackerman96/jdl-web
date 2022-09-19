@@ -1,25 +1,34 @@
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
+import Router from './routes/index.routes';
+import { BrowserRouter, useHistory } from 'react-router-dom';
+import NavigationBar from './screens/NavigationBar';
+import {connect} from 'react-redux';
+import { result } from 'lodash';
+import ErrorBoundaries from './screens/ErrorBoundaries';
+import {productByCategory, searchingFunction} from './redux/thunks/onboarding.thunks';
+function App(props) {
+  console.log('props', props);
+  const{categories, productByCategory, searchingFunction} = props;
 
-function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+        <BrowserRouter>
+        <NavigationBar  categories={categories} 
+        productByCategory={productByCategory} searchingFunction={searchingFunction}/>
+          <Router />
+        </BrowserRouter>
+    </>
+
   );
 }
 
-export default App;
+const mapDispatchToProps = (dispatch) => ({
+  productByCategory: (selectedCategory) => dispatch(productByCategory(selectedCategory)),
+  searchingFunction: (searchTerm) => dispatch(searchingFunction(searchTerm))
+});
+const mapStateToProps = (state) => ({
+  categories: result(state, 'categories.data', {})
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
